@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  namespace: default
+  labels:
+    app: my-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          # 다양한 형식의 로그를 주기적으로 출력 (info/warn/error + JSON)
+          i=0
+          while true; do
+            i=$((i+1))
+
+            # 일반 텍스트 로그
+            echo "INFO  Request received: GET /api/users id=$i duration_ms=$((RANDOM % 200 + 10))"
+
+            # JSON 형식 로그
+            echo "{\"level\":\"info\",\"message\":\"Request processed\",\"path\":\"/api/users\",\"status_code\":200,\"duration_ms\":$((RANDOM % 200 + 10)),\"request_id\":\"req-$i\"}"
+
+            # 10번에 1번 warn
+            if [ $((i % 10)) -eq 0 ]; then
+              echo "WARN  Slow response detected: GET /api/orders duration_ms=$((RANDOM % 2000 + 1000))"
+              echo "{\"level\":\"warn\",\"message\":\"Slow response\",\"path\":\"/api/orders\",\"status_code\":200,\"duration_ms\":$((RANDOM % 2000 + 1000))}"
+            fi
+
+            # 20번에 1번 error
+            if [ $((i % 20)) -eq 0 ]; then
+              echo "ERROR DB connection failed: timeout after 30s"
+              echo "{\"level\":\"error\",\"message\":\"DB connection failed\",\"error\":\"timeout\",\"status_code\":500,\"duration_ms\":30000}"
+            fi
+
+            sleep 1
+          done
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            cpu: 50m
+            memory: 32Mi

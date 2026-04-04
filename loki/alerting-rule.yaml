@@ -1,0 +1,65 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: loki-log-alerts
+  namespace: monitoring
+  labels:
+    role: alert-rules
+spec:
+  groups:
+    - name: loki-log-alerts
+      interval: 1m    # 1분마다 평가
+      rules:
+
+        # 에러 로그 급증 알림
+        - alert: HighErrorRate
+          expr: |
+            sum(rate({namespace="default"} |= "ERROR" [5m])) by (app)
+            > 0.1
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High error log rate: {{ $labels.app }}"
+            description: |
+              App {{ $labels.app }} is generating {{ $value | humanize }} error logs/s
+              for more than 2 minutes.
+
+        # DB 연결 에러 다수 발생
+        - alert: DatabaseConnectionError
+          expr: |
+            count_over_time(
+              {namespace="default"} |= "DB connection failed" [5m]
+            ) > 5
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Database connection errors detected"
+            description: "More than 5 DB connection failures in the last 5 minutes."
+
+        # 앱에서 로그가 전혀 오지 않음 (앱 다운 감지)
+        - alert: NoLogsReceived
+          expr: |
+            sum(rate({namespace="default", app="my-app"}[5m])) == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "No logs from my-app"
+            description: "my-app has produced no logs for 5 minutes. Pod may be down."
+
+        # 응답 시간 P95가 2초 초과
+        - alert: SlowResponseTime
+          expr: |
+            quantile_over_time(0.95,
+              {namespace="default", app="my-app"}
+              | json
+              | unwrap duration_ms [5m]
+            ) > 2000
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Slow P95 response time: my-app"
+            description: "P95 response time is {{ $value }}ms (threshold: 2000ms)."

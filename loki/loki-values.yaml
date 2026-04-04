@@ -1,0 +1,61 @@
+# Loki Helm Values (SingleBinary 모드 — 소규모 환경용)
+# helm install loki grafana/loki -n monitoring -f loki-values.yaml
+
+loki:
+  commonConfig:
+    replication_factor: 1    # SingleBinary 모드에서는 1
+
+  storage:
+    type: filesystem         # 개발/테스트용. 운영에서는 s3로 변경
+
+  schemaConfig:
+    configs:
+      - from: "2024-01-01"
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: loki_index_
+          period: 24h
+
+  limits_config:
+    retention_period: 30d            # 로그 보존 기간 30일
+    ingestion_rate_mb: 16            # 초당 최대 수집 용량 (MB)
+    ingestion_burst_size_mb: 32
+    max_label_names_per_series: 15   # 스트림당 최대 레이블 수
+    max_query_series: 5000
+
+  rulerConfig:
+    storage:
+      type: local
+      local:
+        directory: /var/loki/rules
+    rule_path: /tmp/loki/scratch
+    alertmanager_url: http://alertmanager.monitoring:9093
+    ring:
+      kvstore:
+        store: inmemory
+    enable_api: true
+
+  compactor:
+    working_directory: /var/loki/compactor
+    retention_enabled: true
+    retention_delete_delay: 2h
+    compaction_interval: 10m
+
+singleBinary:
+  replicas: 1
+  persistence:
+    size: 10Gi
+
+# S3 운영 환경으로 전환 시 아래 주석 해제
+# loki:
+#   storage:
+#     type: s3
+#     s3:
+#       region: ap-northeast-2
+#       bucketnames: my-loki-logs
+#       s3ForcePathStyle: false
+# serviceAccount:
+#   annotations:
+#     eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/loki-s3-role

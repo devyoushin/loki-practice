@@ -1,0 +1,55 @@
+# Promtail Helm Values
+# helm install promtail grafana/promtail -n monitoring -f promtail-values.yaml
+
+config:
+  clients:
+    - url: http://loki.monitoring:3100/loki/api/v1/push
+
+  scrape_configs:
+    - job_name: kubernetes-pods
+      kubernetes_sd_configs:
+        - role: pod
+
+      pipeline_stages:
+        # 1. CRI 로그 형식 파싱 (timestamp, stream, flags, log)
+        - cri: {}
+
+        # 2. JSON 형식 로그에서 level 필드 추출
+        - json:
+            expressions:
+              level: level    # JSON의 "level" → 임시 레이블
+
+        # 3. level을 Loki 스트림 레이블로 등록
+        #    주의: level은 "info/warn/error" 3가지 값 → 카디널리티 낮음 (OK)
+        - labels:
+            level:
+
+        # 4. 헬스체크 로그 제외 (비용 절감)
+        - drop:
+            expression: ".*health.*check.*"
+
+      relabel_configs:
+        # 필수: app 레이블 없는 Pod 제외
+        - source_labels: [__meta_kubernetes_pod_label_app]
+          action: drop
+          regex: ^$
+
+        # 네임스페이스 레이블
+        - source_labels: [__meta_kubernetes_namespace]
+          target_label: namespace
+
+        # Pod 이름 레이블
+        - source_labels: [__meta_kubernetes_pod_name]
+          target_label: pod
+
+        # 컨테이너 이름 레이블
+        - source_labels: [__meta_kubernetes_pod_container_name]
+          target_label: container
+
+        # app 레이블 (Pod의 app 레이블 값을 그대로 사용)
+        - source_labels: [__meta_kubernetes_pod_label_app]
+          target_label: app
+
+        # 노드 이름 레이블
+        - source_labels: [__meta_kubernetes_pod_node_name]
+          target_label: node_name
