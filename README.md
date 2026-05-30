@@ -1,91 +1,47 @@
 # loki-practice
 
-A hands-on repository for learning Loki on EKS.
-- **Environment**: EKS / Loki 3.x
-- **Namespaces**: log stack `monitoring`, app `default`
+EKS + Loki 3.x 기준으로 로그 수집, 레이블 설계, LogQL, Promtail, Grafana 연동, 알림, 보존 정책을 정리한 개인 학습 문서입니다.
 
----
+## 빠른 시작
 
-## Learning Path
+- 처음 볼 문서: `docs/install.md`
+- 전체 흐름: 설치 -> 레이블/LogQL -> 수집 파이프라인 -> Grafana 연동 -> 알림/보존 -> 실습
+- AI 작업 지침: `CLAUDE.md`
 
-```
-1. Installation    → install.md
-2. Core Concepts   → logql-basics-guide.md, label-guide.md
-3. Advanced
-   ├── Parsing     → logql-advanced-guide.md
-   ├── Collection  → promtail-guide.md
-   ├── Alerting    → alerting-guide.md
-   └── Storage     → retention-guide.md
-4. Visualization   → grafana-integration-guide.md
-5. Hands-on        → log-query-test.md
-```
+## 구조
 
----
-
-## Documents
-
-### Installation
-| File | Description |
-|------|-------------|
-| [install.md](./install.md) | Install Loki + Promtail + Grafana via Helm |
-
-### Core Concepts
-| File | Description |
-|------|-------------|
-| [logql-basics-guide.md](./logql-basics-guide.md) | LogQL 기초 — 로그 스트림 선택, 라인 필터, 레이블 필터 |
-| [label-guide.md](./label-guide.md) | 레이블 설계 — 카디널리티, 정적/동적 레이블 |
-
-### Advanced
-| File | Description |
-|------|-------------|
-| [logql-advanced-guide.md](./logql-advanced-guide.md) | LogQL 심화 — JSON/logfmt 파싱, 메트릭 쿼리, 집계 |
-| [promtail-guide.md](./promtail-guide.md) | Promtail — Pipeline stages, 레이블 추출, 멀티라인 처리 |
-| [alerting-guide.md](./alerting-guide.md) | Loki Alerting — PrometheusRule로 로그 기반 알림 설정 |
-| [retention-guide.md](./retention-guide.md) | 보존 정책 — 스토리지 설정, 보존 기간, compactor |
-
-### Visualization
-| File | Description |
-|------|-------------|
-| [grafana-integration-guide.md](./grafana-integration-guide.md) | Grafana 연동 — Loki 데이터소스, Explore, 대시보드 |
-
-### Hands-on
-| File | Description |
-|------|-------------|
-| [log-query-test.md](./log-query-test.md) | 단계별 LogQL 실습 (기본 조회 → 파싱 → 메트릭 → 알림) |
-
----
-
-## Manifest Structure
-
-```
-app/
-├── deployment.yaml    # 로그를 생성하는 샘플 앱 (info/warn/error/JSON)
-└── service.yaml       # 샘플 앱 Service
-
-loki/
-├── loki-values.yaml       # Loki Helm values (SingleBinary 모드)
-├── promtail-values.yaml   # Promtail Helm values
-└── alerting-rule.yaml     # 로그 기반 알림 규칙 예시
+```text
+loki-practice/
+├── README.md
+├── CLAUDE.md
+├── docs/
+│   ├── README.md
+│   ├── agents/
+│   ├── rules/
+│   ├── templates/
+│   └── *.md
+└── ops/
+    ├── README.md
+    └── config/     # Loki/Promtail values, 알림 규칙, 샘플 앱
 ```
 
----
+## 학습 경로
 
-## Key Concept Summary
+| 단계 | 문서 |
+|------|------|
+| 설치 | `docs/install.md` |
+| 핵심 개념 | `docs/label-guide.md`, `docs/logql-basics-guide.md` |
+| 쿼리 | `docs/logql-advanced-guide.md`, `docs/log-query-test.md` |
+| 수집 | `docs/promtail-guide.md` |
+| 시각화 | `docs/grafana-integration-guide.md` |
+| 운영 | `docs/alerting-guide.md`, `docs/retention-guide.md` |
 
-**Promtail → Loki → Grafana** 가 Loki 스택의 핵심 흐름입니다.
+## 환경
 
-```
-[App Pod]
-   │ stdout/stderr
-   ▼
-[Promtail]       → 로그 수집, 레이블 부착, Loki로 전송
-   │ push (HTTP)
-   ▼
-[Loki]           → 레이블 인덱싱 + 로그 청크 저장
-   │
-   ▼
-[Grafana]        → LogQL로 조회, 대시보드, 알림
-```
-
-> Loki는 로그 **내용을 인덱싱하지 않고** 레이블만 인덱싱합니다.
-> 덕분에 Elasticsearch보다 훨씬 저렴하게 운영할 수 있습니다.
+| 항목 | 값 |
+|------|-----|
+| Platform | EKS |
+| Loki | 3.x |
+| Collector | Promtail 3.x |
+| Namespace | `monitoring` |
+| App namespace | `default` |

@@ -4,14 +4,17 @@
 
 ```
 loki-practice/
-├── app/
-│   ├── deployment.yaml      # 다양한 형식의 로그를 생성하는 샘플 앱
-│   └── service.yaml         # 샘플 앱 Service
-├── loki/
-│   ├── loki-values.yaml     # Loki Helm values
-│   ├── promtail-values.yaml # Promtail Helm values
-│   └── alerting-rule.yaml   # 알림 규칙 예시
-└── log-query-test.md
+├── docs/
+│   └── log-query-test.md
+└── ops/
+    └── config/
+        ├── app/
+        │   ├── deployment.yaml      # 다양한 형식의 로그를 생성하는 샘플 앱
+        │   └── service.yaml         # 샘플 앱 Service
+        └── loki/
+            ├── loki-values.yaml     # Loki Helm values
+            ├── promtail-values.yaml # Promtail Helm values
+            └── alerting-rule.yaml   # 알림 규칙 예시
 ```
 
 ---
@@ -23,8 +26,8 @@ loki-practice/
 kubectl get pods -n monitoring
 
 # 샘플 앱 배포
-kubectl apply -f app/deployment.yaml
-kubectl apply -f app/service.yaml
+kubectl apply -f ../ops/config/app/deployment.yaml
+kubectl apply -f ../ops/config/app/service.yaml
 
 # Pod가 Running 상태인지 확인
 kubectl get pods -l app=my-app
@@ -122,7 +125,7 @@ quantile_over_time(0.99,
 ## Step 6: 알림 규칙 적용
 
 ```bash
-kubectl apply -f loki/alerting-rule.yaml
+kubectl apply -f ../ops/config/loki/alerting-rule.yaml
 
 # 알림 규칙 확인
 kubectl port-forward svc/loki -n monitoring 3100:3100

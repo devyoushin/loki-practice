@@ -22,7 +22,7 @@ kubectl create namespace monitoring
 ```bash
 helm install loki grafana/loki \
   --namespace monitoring \
-  -f loki/loki-values.yaml
+  -f ../ops/config/loki/loki-values.yaml
 ```
 
 설치 확인
@@ -38,7 +38,7 @@ Promtail은 각 노드에서 로그를 수집하는 DaemonSet으로 동작합니
 ```bash
 helm install promtail grafana/promtail \
   --namespace monitoring \
-  -f loki/promtail-values.yaml
+  -f ../ops/config/loki/promtail-values.yaml
 ```
 
 설치 확인
