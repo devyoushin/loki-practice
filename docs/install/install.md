@@ -9,9 +9,11 @@
 | Helm | `install-helm.md` | Loki, Promtail, Grafana를 EKS에 설치 |
 | systemd | `install-systemd.md` | RPM 또는 tarball로 설치 후 Loki와 Promtail을 서비스로 관리 |
 | Docker Compose | `install-docker-compose.md` | 로컬 로그 스택 검증용 |
+| Upgrade | `upgrade/` | Helm, systemd, Docker Compose 업그레이드 |
 
 ## 읽는 순서
 
 1. `install-helm.md`
 2. `install-systemd.md`
 3. `install-docker-compose.md`
+4. `upgrade/`

@@ -4,7 +4,7 @@ EKS + Loki 3.x 기준으로 로그 수집, 레이블 설계, LogQL, Promtail, Gr
 
 ## 빠른 시작
 
-- 처음 볼 문서: `docs/install.md`
+- 처음 볼 문서: `docs/install/install.md`
 - 설치 방식: Helm / systemd / Docker Compose
 - 전체 흐름: 설치 -> 레이블/LogQL -> 수집 파이프라인 -> Grafana 연동 -> 알림/보존 -> 실습
 - AI 작업 지침: `CLAUDE.md`
@@ -30,7 +30,7 @@ loki-practice/
 
 | 단계 | 문서 |
 |------|------|
-| 설치 | `docs/install.md` |
+| 설치 | `docs/install/install.md` |
 | 핵심 개념 | `docs/label-guide.md`, `docs/logql-basics-guide.md` |
 | 쿼리 | `docs/logql-advanced-guide.md`, `docs/log-query-test.md` |
 | 수집 | `docs/promtail-guide.md` |

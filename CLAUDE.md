@@ -43,7 +43,7 @@ loki-practice/
 
 | 문서 | 주제 |
 |------|------|
-| `docs/install.md` | Loki 설치 (Helm + EKS) |
+| `docs/install/install.md` | Loki 설치 (Helm + EKS) |
 | `docs/label-guide.md` | 레이블 설계 및 카디널리티 |
 | `docs/logql-basics-guide.md` | LogQL 기초 |
 | `docs/logql-advanced-guide.md` | LogQL 고급 (메트릭 쿼리) |

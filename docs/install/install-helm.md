@@ -15,11 +15,11 @@ kubectl create namespace monitoring
 ```bash
 helm install loki grafana/loki \
   --namespace monitoring \
-  -f ../ops/config/loki/loki-values.yaml
+  -f ../../ops/config/loki/loki-values.yaml
 
 helm install promtail grafana/promtail \
   --namespace monitoring \
-  -f ../ops/config/loki/promtail-values.yaml
+  -f ../../ops/config/loki/promtail-values.yaml
 ```
 
 ## Grafana 연동
@@ -44,8 +44,8 @@ kubectl port-forward svc/grafana -n monitoring 3000:80
 ## 업그레이드 / 삭제
 
 ```bash
-helm upgrade loki grafana/loki -n monitoring -f ../ops/config/loki/loki-values.yaml
-helm upgrade promtail grafana/promtail -n monitoring -f ../ops/config/loki/promtail-values.yaml
+helm upgrade loki grafana/loki -n monitoring -f ../../ops/config/loki/loki-values.yaml
+helm upgrade promtail grafana/promtail -n monitoring -f ../../ops/config/loki/promtail-values.yaml
 helm uninstall loki -n monitoring
 helm uninstall promtail -n monitoring
 helm uninstall grafana -n monitoring
