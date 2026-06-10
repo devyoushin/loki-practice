@@ -95,7 +95,7 @@ spec:
 ```
 
 ```bash
-kubectl apply -f ../ops/config/loki/alerting-rule.yaml
+kubectl apply -f ../../ops/config/loki/alerting-rule.yaml
 ```
 
 ---
